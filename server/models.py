@@ -4,8 +4,15 @@ from sqlalchemy_serializer import SerializerMixin
 db = SQLAlchemy()
 
 
-class Product(db.Model, SerializerMixin):
-    pass
+class Project(db.Model, SerializerMixin):
+    __tablename__ = "projects"
+
+    id = db.Column(db.Integer, primary_key=True)
+    brand = db.Column(db.String)
+    style = db.Column(db.String)
+    size = db.Column(db.Float)
+    color = db.Column(db.String)
+    inventory = db.Column(db.Integer)
 
     def __repr__(self):
-        pass
+        return f"<Brand {self.brand} | Style {self.style} | Color {self.color} | Size {self.size} | Inventory {self.inventory}>"

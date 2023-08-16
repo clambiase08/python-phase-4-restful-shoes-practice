@@ -1,4 +1,4 @@
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, abort
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from models import Project, db
@@ -35,17 +35,21 @@ class Projects(Resource):
         return make_response(new_project.to_dict(), 201)
 
 
-api.add_resource(Project, "/projects")
+api.add_resource(Projects, "/projects")
 
 
 class ProjectById(Resource):
     def get(self, id):
         project = Project.query.filter_by(id=id).first().to_dict()
+        if not project:
+            abort(404, "Resource not found")
         return make_response(project, 200)
 
     def patch(self, id):
         data = request.get_json()
         project = Project.query.filter_by(id=id).first()
+        if not project:
+            abort(404, "Resource not found")
         for attr in data:
             setattr(project, attr, data[attr])
         db.session.add(project)
@@ -54,6 +58,8 @@ class ProjectById(Resource):
 
     def delete(self, id):
         project = Project.query.filter_by(id=id).first()
+        if not project:
+            abort(404, "Resource not found")
         db.session.delete(project)
         db.session.commit()
         return make_response("", 204)
